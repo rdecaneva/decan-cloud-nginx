@@ -1,0 +1,6 @@
+#!/bin/sh
+# Install root-owned and executable at /usr/local/sbin/check-decan-ingress.
+# Verify a real end-to-end ingress request without making backend availability
+# (a separate concern) a reason for both ingress nodes to drop the VIP.
+set -eu
+curl --noproxy '*' --silent --show-error --max-time 2 --resolve mtg.decaneva.cloud:80:127.0.0.1 -o /dev/null -w '%{http_code}' http://mtg.decaneva.cloud/ | grep -qx 308

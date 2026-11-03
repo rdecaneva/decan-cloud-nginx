@@ -1,0 +1,31 @@
+# TEMPLATE ONLY. Install/configure on separate LAN hosts after assigning a free VIP.
+# Both nodes start BACKUP. Use distinct priorities (150 primary, 100 secondary).
+# Replace every <...> value. Permit VRRP IP protocol 112 between both hosts.
+# Router TCP 80/443 forwarding must target <VIRTUAL_IP>, not a physical node.
+global_defs {
+    enable_script_security
+    script_user root
+}
+vrrp_script ingress_healthy {
+    script "/usr/local/sbin/check-decan-ingress"
+    interval 2
+    fall 2
+    rise 2
+}
+vrrp_instance DECAN_INGRESS {
+    state BACKUP
+    interface <LAN_INTERFACE>
+    virtual_router_id 51
+    priority <NODE_PRIORITY>
+    advert_int 1
+    unicast_src_ip <THIS_NODE_IP>
+    unicast_peer {
+        <OTHER_NODE_IP>
+    }
+    virtual_ipaddress {
+        <VIRTUAL_IP>/24 dev <LAN_INTERFACE>
+    }
+    track_script {
+        ingress_healthy
+    }
+}

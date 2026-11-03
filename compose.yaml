@@ -1,0 +1,73 @@
+name: decan-cloud-nginx
+x-proxy: &proxy
+  build: .
+  image: decan-cloud-nginx:local
+  restart: unless-stopped
+  command: [proxy]
+  depends_on:
+    certificates:
+      condition: service_healthy
+  volumes:
+    - letsencrypt:/etc/letsencrypt:ro
+    - bootstrap:/bootstrap:ro
+    - challenges:/var/www/certbot:ro
+    - ./config:/opt/config:ro
+  networks: [edge, services]
+  healthcheck:
+    test: [CMD, curl, -fsS, http://127.0.0.1:8080/healthz]
+    interval: 5s
+    timeout: 2s
+    retries: 3
+    start_period: 15s
+services:
+  certificates:
+    build: .
+    image: decan-cloud-nginx:local
+    restart: unless-stopped
+    command: [certificates]
+    environment:
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:?Set LETSENCRYPT_EMAIL in .env}
+      LETSENCRYPT_STAGING: ${LETSENCRYPT_STAGING:-0}
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - bootstrap:/bootstrap
+      - challenges:/var/www/certbot
+      - ./config:/opt/config:ro
+    networks: [edge]
+    healthcheck:
+      test: [CMD, test, -f, /bootstrap/ready]
+      interval: 3s
+      timeout: 2s
+      retries: 30
+  nginx-a:
+    <<: *proxy
+  nginx-b:
+    <<: *proxy
+  edge:
+    image: haproxy:3.2-alpine
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks: [edge]
+    depends_on:
+      nginx-a:
+        condition: service_healthy
+      nginx-b:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, haproxy, -c, -f, /usr/local/etc/haproxy/haproxy.cfg]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+networks:
+  edge:
+  services:
+    external: true
+    name: decan-cloud-services
+volumes:
+  letsencrypt:
+  bootstrap:
+  challenges:

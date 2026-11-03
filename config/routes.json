@@ -1,0 +1,41 @@
+[
+  {
+    "name": "mtg",
+    "domain": "mtg.decaneva.cloud",
+    "upstream": "mtg-prod:3000",
+    "certificate": "mtg.decaneva.cloud",
+    "certificate_domains": [
+      "mtg.decaneva.cloud",
+      "mtg-dev.decaneva.cloud"
+    ],
+    "body_size": "81m"
+  },
+  {
+    "name": "mtg-dev",
+    "domain": "mtg-dev.decaneva.cloud",
+    "upstream": "mtg-dev:3000",
+    "certificate": "mtg.decaneva.cloud",
+    "body_size": "81m"
+  },
+  {
+    "name": "imperium",
+    "domain": "imperium.decaneva.cloud",
+    "upstream": "imperium:5173",
+    "certificate": "imperium.decaneva.cloud",
+    "body_size": "20m"
+  },
+  {
+    "name": "stats",
+    "domain": "stats.decaneva.cloud",
+    "upstream": "stats:8000",
+    "certificate": "stats.decaneva.cloud",
+    "body_size": "20m"
+  },
+  {
+    "name": "tailcoat",
+    "domain": "tailcoat.decaneva.cloud",
+    "upstream": "tailcoat:80",
+    "certificate": "tailcoat.decaneva.cloud",
+    "body_size": "20m"
+  }
+]
