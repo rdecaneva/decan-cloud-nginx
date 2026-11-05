@@ -13,3 +13,4 @@ connect mtg-tabletop-app-dev-1 mtg-dev
 connect ti4-turn-tracker-app-1 imperium
 connect game-stats-web-1 stats
 connect decanid-web-1 tailcoat
+connect decanid-sso-server-1 authentik-sso

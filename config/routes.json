@@ -37,5 +37,12 @@
     "upstream": "tailcoat:80",
     "certificate": "tailcoat.decaneva.cloud",
     "body_size": "20m"
+  },
+  {
+    "name": "sso",
+    "domain": "sso.decaneva.cloud",
+    "upstream": "authentik-sso:9000",
+    "certificate": "sso.decaneva.cloud",
+    "body_size": "20m"
   }
 ]

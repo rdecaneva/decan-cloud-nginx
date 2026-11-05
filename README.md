@@ -9,6 +9,7 @@ Shared HTTPS ingress for Decan Cloud. HAProxy distributes connections across two
 | https://imperium.decaneva.cloud | imperium | 5173 |
 | https://stats.decaneva.cloud | stats | 8000 |
 | https://tailcoat.decaneva.cloud | tailcoat | 80 |
+| https://sso.decaneva.cloud | authentik-sso | 9000 |
 
 Only this stack owns host ports 80 and 443. HTTP redirects to the canonical HTTPS hostname. Unknown TLS names are rejected. All routes support WebSockets and preserve the original client IP using the PROXY protocol between HAProxy and nginx. Incoming forwarded headers are overwritten at nginx. The service network must contain trusted applications only; nginx traffic ports are never published directly.
 
@@ -51,6 +52,6 @@ Add its hostname, unique service alias, certificate name, and body-size limit to
 
 ## Validation
 
-`python3 scripts/check-routes.py --trusted` checks all HTTP redirects and HTTPS responses (Stats intentionally requires authentication). `docker compose exec nginx-a nginx -t` and the same for nginx-b validate generated configuration. For a controlled replica-failure test stop nginx-a, run the checker while nginx-b serves traffic, and start nginx-a again. Repeat for nginx-b. Do not stop both replicas at once.
+`python3 scripts/check-routes.py --trusted` checks all HTTP redirects and HTTPS responses (Stats intentionally requires authentication; SSO can redirect to its login flow). `docker compose exec nginx-a nginx -t` and the same for nginx-b validate generated configuration. For a controlled replica-failure test stop nginx-a, run the checker while nginx-b serves traffic, and start nginx-a again. Repeat for nginx-b. Do not stop both replicas at once.
 
 References: [nginx proxy configuration](https://nginx.org/en/docs/http/ngx_http_proxy_module.html), [Certbot operation](https://eff-certbot.readthedocs.io/en/stable/using.html), [Keepalived failover](https://www.keepalived.org/documentation/user-guide/quick-start/).
